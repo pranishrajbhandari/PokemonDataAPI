@@ -1,7 +1,10 @@
-import { Request, Response } from 'express';
-import PokemonModel from '../models/Pokemon';
+import { Request, Response } from "express";
+import PokemonModel from "../models/Pokemon";
 
-export const addFavorite = async (req: Request, res: Response): Promise<void> => {
+export const addFavorite = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { id, name, addedBy } = req.body;
   if (!id || !name) {
     res.status(400).json({ error: "Pokemon id and name are required" });
@@ -23,7 +26,10 @@ export const addFavorite = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-export const removeFavorite = async (req: Request, res: Response): Promise<void> => {
+export const removeFavorite = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { id, addedBy } = req.query;
   if (!id || !addedBy) {
     res.status(400).json({ error: "id and addedBy are required" });
@@ -31,7 +37,10 @@ export const removeFavorite = async (req: Request, res: Response): Promise<void>
   }
 
   try {
-    const deleted = await PokemonModel.findOneAndDelete({ id: Number(id), addedBy });
+    const deleted = await PokemonModel.findOneAndDelete({
+      id: Number(id),
+      addedBy,
+    });
     if (!deleted) {
       res.status(404).json({ error: "Favorite not found" });
       return;
@@ -42,7 +51,10 @@ export const removeFavorite = async (req: Request, res: Response): Promise<void>
   }
 };
 
-export const getFavorites = async (req: Request, res: Response): Promise<void> => {
+export const getFavorites = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { addedBy } = req.query;
   if (!addedBy) {
     res.status(400).json({ error: "addedBy is required" });
@@ -54,5 +66,24 @@ export const getFavorites = async (req: Request, res: Response): Promise<void> =
     res.json(favorites);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch favorites", details: err });
+  }
+};
+
+export const isPokemonFavorited = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { addedBy, pokemonId } = req.query;
+
+  if (!addedBy || !pokemonId) {
+    res.status(400).json({ error: "addedBy and pokemonId are required" });
+    return;
+  }
+
+  try {
+    const isFavorited = await PokemonModel.exists({ addedBy, id: pokemonId });
+    res.json({ isFavorited: !!isFavorited });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to check favorite", details: err });
   }
 };
