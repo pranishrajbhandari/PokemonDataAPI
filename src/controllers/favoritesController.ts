@@ -62,7 +62,7 @@ export const getFavorites = async (
   }
 
   try {
-    const favorites = await PokemonModel.find({ addedBy });
+    const favorites = await PokemonModel.find({ addedBy }).sort({ _id: -1 });
     res.json(favorites);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch favorites", details: err });
