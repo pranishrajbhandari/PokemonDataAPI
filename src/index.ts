@@ -4,12 +4,15 @@ import dotenv from "dotenv";
 import favoriteRoutes from "./routes/favorites";
 import advancedSearchRoutes from "./routes/advancedSearch";
 
+const cors = require('cors');
+
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 const mongoURI = process.env.MONGODB_URI || "";
 
+app.use(cors());
 app.use(express.json());
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/search", advancedSearchRoutes);
